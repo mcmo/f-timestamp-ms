@@ -1,6 +1,6 @@
 const Hapi = require('hapi')
 
-const port = process.env.PORT || 8080
+//const port = process.env.PORT || 8080
 
 const server = new Hapi.Server()
 
