@@ -1,13 +1,43 @@
 'use strict'
 const Hapi = require('hapi')
+const Path = require('path')
 
 const server = new Hapi.Server()
 
-server.connection({
-  port: process.env.PORT || 8080
+server.connection({ port: process.env.PORT || 8080 })
+
+server.register(require('inert'), () => {
+  
+  server.route({
+    method: 'GET',
+    path: '/{date}',
+    handler: dateHandler
+  })
+  
+  // server static assets
+  server.route({
+    path: '/css/{path*}',
+    method: 'GET',
+    handler: {
+      directory: {
+        path: './public/css',
+        listing: false
+      }
+    }  
+  })
+  
+  server.route({
+    method: 'GET',
+    path: '/',
+    handler: function (request, reply) {
+      reply.file('public/index.html');
+    }
+  })
+  
+  server.start(() => console.log('Started'))
 })
 
-function handler(request, reply) {
+function dateHandler(request, reply) {
   const months = ["January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"]
   
@@ -22,10 +52,3 @@ function handler(request, reply) {
   reply(dateObj)
 }
 
-server.route({
-  method: 'GET',
-  path: '/{date}',
-  handler: handler
-})
-
-server.start(() => console.log('Started'))
